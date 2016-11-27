@@ -1,26 +1,27 @@
 package io.github.dstricks.tipntotal;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private static final int CALCULATION_DELAY_SECS = 1;
 
-    private EditText amount;
-    private TextView fifteen;
-    private TextView fifteenAmount;
-    private TextView eighteen;
-    private TextView eighteenAmount;
-    private TextView twenty;
-    private TextView twentyAmount;
+    @BindView(R.id.amount) EditText amount;
+    @BindView(R.id.fifteen) TextView fifteen;
+    @BindView(R.id.fifteen_amount) TextView fifteenAmount;
+    @BindView(R.id.eighteen) TextView eighteen;
+    @BindView(R.id.eighteen_amount) TextView eighteenAmount;
+    @BindView(R.id.twenty) TextView twenty;
+    @BindView(R.id.twenty_amount) TextView twentyAmount;
 
     private Calculator mCalculator = new Calculator();
     private Handler mHandler;
@@ -49,33 +50,14 @@ public class MainActivity extends AppCompatActivity {
      protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setViewHandles();
+        ButterKnife.bind(this);
 
         mHandler = new Handler();
     }
 
-    private void setViewHandles() {
-        amount = (EditText) findViewById(R.id.amount);
-        fifteen = (TextView) findViewById(R.id.fifteen);
-        fifteenAmount = (TextView) findViewById(R.id.fifteen_amount);
-        eighteen = (TextView) findViewById(R.id.eighteen);
-        eighteenAmount = (TextView) findViewById(R.id.eighteen_amount);
-        twenty = (TextView) findViewById(R.id.twenty);
-        twentyAmount = (TextView) findViewById(R.id.twenty_amount);
-
-        amount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mHandler.removeCallbacks(mUpdateCalculations);
-                mHandler.postDelayed(mUpdateCalculations, (CALCULATION_DELAY_SECS * 1000));
-            }
-        });
+    @OnTextChanged(value = R.id.amount, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED) void onAmountUpdated() {
+        mHandler.removeCallbacks(mUpdateCalculations);
+        mHandler.postDelayed(mUpdateCalculations, (CALCULATION_DELAY_SECS * 1000));
     }
 
     private String format(double amount) {
